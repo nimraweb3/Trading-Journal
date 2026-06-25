@@ -52,9 +52,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Ironbook — ICT/SMC Trading Journal" },
+      { title: "N.I.M Trade Journal" },
       { name: "description", content: "A premium trading journal for ICT/SMC traders. Track setups, equity, analytics, and discipline." },
       { name: "theme-color", content: "#1a0608" },
+      { property: "og:title", content: "N.I.M Trade Journal" },
+      { name: "twitter:title", content: "N.I.M Trade Journal" },
+      { property: "og:description", content: "A premium trading journal for ICT/SMC traders. Track setups, equity, analytics, and discipline." },
+      { name: "twitter:description", content: "A premium trading journal for ICT/SMC traders. Track setups, equity, analytics, and discipline." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c0098498-3e1d-47df-bcd9-13275a83a747" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c0098498-3e1d-47df-bcd9-13275a83a747" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
