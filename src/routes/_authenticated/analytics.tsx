@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { profileQuery, tradesQuery } from "@/lib/queries";
 import { groupBy } from "@/lib/trade-stats";
 import { formatCurrency, formatPercent } from "@/lib/format";
+import { useAccountContext } from "@/lib/account-context";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({ meta: [{ title: "Analytics — Ironbook" }] }),
@@ -14,9 +15,10 @@ export const Route = createFileRoute("/_authenticated/analytics")({
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function Analytics() {
-  const { data: trades = [] } = useQuery(tradesQuery());
+  const { activeAccountId, activeAccount } = useAccountContext();
+  const { data: trades = [] } = useQuery(tradesQuery(activeAccountId));
   const { data: profile } = useQuery(profileQuery());
-  const currency = profile?.currency ?? "USD";
+  const currency = activeAccount?.currency ?? profile?.currency ?? "USD";
 
   const byPair = useMemo(() => bucket(trades, (t) => t.pair), [trades]);
   const bySession = useMemo(() => bucket(trades, (t) => t.session ?? "—"), [trades]);

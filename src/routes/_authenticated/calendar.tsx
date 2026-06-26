@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { profileQuery, tradesQuery } from "@/lib/queries";
 import { formatCurrency } from "@/lib/format";
 import { GradeBadge } from "@/components/GradeBadge";
+import { useAccountContext } from "@/lib/account-context";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
   head: () => ({ meta: [{ title: "Calendar — Ironbook" }] }),
@@ -12,9 +13,10 @@ export const Route = createFileRoute("/_authenticated/calendar")({
 });
 
 function CalendarPage() {
-  const { data: trades = [] } = useQuery(tradesQuery());
+  const { activeAccountId, activeAccount } = useAccountContext();
+  const { data: trades = [] } = useQuery(tradesQuery(activeAccountId));
   const { data: profile } = useQuery(profileQuery());
-  const currency = profile?.currency ?? "USD";
+  const currency = activeAccount?.currency ?? profile?.currency ?? "USD";
 
   const [cursor, setCursor] = useState(() => {
     const d = new Date();

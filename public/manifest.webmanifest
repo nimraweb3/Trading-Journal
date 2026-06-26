@@ -1,0 +1,14 @@
+{
+  "name": "N.I.M Trade Journal",
+  "short_name": "Ironbook",
+  "description": "Premium trading journal for ICT/SMC traders.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0507",
+  "theme_color": "#1a0608",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}
