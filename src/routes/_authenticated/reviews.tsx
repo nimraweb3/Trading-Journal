@@ -22,15 +22,15 @@ function ReviewsPage() {
   const { data: profile } = useQuery(profileQuery());
   const currency = profile?.currency ?? "USD";
   const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    review_type: "weekly" | "monthly" | "custom";
+    period_start: string; period_end: string; title: string;
+    what_worked: string; what_didnt: string; lessons: string; next_focus: string;
+  }>({
     review_type: "weekly",
     period_start: isoStartOfWeek(),
     period_end: new Date().toISOString().slice(0, 10),
-    title: "",
-    what_worked: "",
-    what_didnt: "",
-    lessons: "",
-    next_focus: "",
+    title: "", what_worked: "", what_didnt: "", lessons: "", next_focus: "",
   });
 
   const save = useMutation({
@@ -76,7 +76,7 @@ function ReviewsPage() {
         <div className="glass-strong rounded-2xl p-5 space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <F label="Type">
-              <select className={inputCls} value={form.review_type} onChange={(e) => setForm({ ...form, review_type: e.target.value })}>
+              <select className={inputCls} value={form.review_type} onChange={(e) => setForm({ ...form, review_type: e.target.value as "weekly" | "monthly" | "custom" })}>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
                 <option value="custom">Custom</option>

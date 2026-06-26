@@ -24,7 +24,7 @@ function ChecklistsPage() {
   const { user } = useAuth();
   const { data: lists = [] } = useQuery(checklistsQuery());
   const [name, setName] = useState("");
-  const [type, setType] = useState("pretrade");
+  const [type, setType] = useState<"pretrade" | "daily" | "posttrade" | "weekly">("pretrade");
 
   const create = useMutation({
     mutationFn: async () => {
@@ -54,7 +54,7 @@ function ChecklistsPage() {
         <div className="flex flex-wrap gap-2">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Checklist name"
             className="flex-1 min-w-[200px] rounded-lg bg-white/[0.04] border border-white/10 px-3 py-2 text-sm focus:outline-none focus:border-accent/60" />
-          <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-lg bg-white/[0.04] border border-white/10 px-3 py-2 text-sm">
+          <select value={type} onChange={(e) => setType(e.target.value as typeof type)} className="rounded-lg bg-white/[0.04] border border-white/10 px-3 py-2 text-sm">
             {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
           <button onClick={() => create.mutate()} className="gradient-maroon rounded-lg px-4 py-2 text-sm">
