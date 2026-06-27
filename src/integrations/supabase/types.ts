@@ -605,6 +605,7 @@ export type Database = {
       trading_models: {
         Row: {
           active: boolean
+          checklist: Json
           confirmation_rules: string | null
           created_at: string
           entry_rules: string | null
@@ -622,6 +623,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          checklist?: Json
           confirmation_rules?: string | null
           created_at?: string
           entry_rules?: string | null
@@ -639,6 +641,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          checklist?: Json
           confirmation_rules?: string | null
           created_at?: string
           entry_rules?: string | null
