@@ -41,8 +41,10 @@ export function ModelFormDialog({ open, onClose, model }: { open: boolean; onClo
         risk_rules: form.risk_rules || null,
         management_rules: form.management_rules || null,
         notes: form.notes || null,
+        checklist: (form.checklist ?? []).filter((s: string) => s && s.trim()),
         active: !!form.active,
       };
+
       if (isEdit) {
         const { error } = await supabase.from("trading_models").update(payload).eq("id", model.id);
         if (error) throw error;
