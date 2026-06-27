@@ -1,4 +1,4 @@
-# Ironbook — Trading Journal
+# TradeBook — Trading Journal
 
 Premium dark-mode trading journal built for ICT/SMC traders. Multi-account, multi-strategy, charts, reviews, mistakes database, calculators, PWA-ready.
 

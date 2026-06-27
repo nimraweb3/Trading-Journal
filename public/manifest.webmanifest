@@ -1,6 +1,6 @@
 {
   "name": "N.I.M Trade Journal",
-  "short_name": "Ironbook",
+  "short_name": "TradeBook",
   "description": "Premium trading journal for ICT/SMC traders.",
   "start_url": "/dashboard",
   "scope": "/",

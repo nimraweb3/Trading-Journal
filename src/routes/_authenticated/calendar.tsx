@@ -8,7 +8,7 @@ import { GradeBadge } from "@/components/GradeBadge";
 import { useAccountContext } from "@/lib/account-context";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
-  head: () => ({ meta: [{ title: "Calendar — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Calendar — TradeBook" }] }),
   component: CalendarPage,
 });
 

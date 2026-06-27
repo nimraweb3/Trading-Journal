@@ -18,7 +18,7 @@ const Ctx = createContext<AccountCtx>({
   loading: true,
 });
 
-const STORAGE_KEY = "ironbook.activeAccountId";
+const STORAGE_KEY = "tradebook.activeAccountId";
 
 export function AccountProvider({ children }: { children: ReactNode }) {
   const { data: accounts = [], isLoading } = useQuery(accountsQuery());

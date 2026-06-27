@@ -8,7 +8,7 @@ import { computeStats } from "@/lib/trade-stats";
 import { formatCurrency, formatPercent, formatNumber } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/models")({
-  head: () => ({ meta: [{ title: "Strategies — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Strategies — TradeBook" }] }),
   component: ModelsPage,
 });
 

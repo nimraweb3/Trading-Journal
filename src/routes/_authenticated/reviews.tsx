@@ -10,7 +10,7 @@ import { computeStats } from "@/lib/trade-stats";
 import { formatCurrency, formatPercent } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/reviews")({
-  head: () => ({ meta: [{ title: "Reviews — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Reviews — TradeBook" }] }),
   component: ReviewsPage,
 });
 
