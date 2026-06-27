@@ -394,3 +394,58 @@ function ImagePreview({ path, onRemove }: { path: string; onRemove: () => void }
     </div>
   );
 }
+
+function MistakesPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const toggle = (m: string) => {
+    const has = selected.some((s) => s.toLowerCase() === m.toLowerCase());
+    const next = has ? selected.filter((s) => s.toLowerCase() !== m.toLowerCase()) : [...selected, m];
+    onChange(next.join(", "));
+  };
+  const isOn = (m: string) => selected.some((s) => s.toLowerCase() === m.toLowerCase());
+  const customs = selected.filter((s) => !MISTAKE_PRESETS.some((p) => p.toLowerCase() === s.toLowerCase()));
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-1.5">
+        {MISTAKE_PRESETS.map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => toggle(m)}
+            className={`rounded-full px-3 py-1 text-xs border transition ${
+              isOn(m)
+                ? "bg-loss/20 border-loss/40 text-loss"
+                : "border-white/10 bg-white/[0.03] text-muted-foreground hover:text-foreground hover:border-white/20"
+            }`}
+          >
+            {m}
+          </button>
+        ))}
+        {customs.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => toggle(c)}
+            className="rounded-full px-3 py-1 text-xs border bg-loss/20 border-loss/40 text-loss"
+          >
+            {c} ×
+          </button>
+        ))}
+      </div>
+      <input
+        className={inputCls}
+        placeholder="Add custom mistake and press Enter…"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const v = (e.target as HTMLInputElement).value.trim();
+            if (v && !isOn(v)) onChange([...selected, v].join(", "));
+            (e.target as HTMLInputElement).value = "";
+          }
+        }}
+      />
+    </div>
+  );
+}
+
+}
