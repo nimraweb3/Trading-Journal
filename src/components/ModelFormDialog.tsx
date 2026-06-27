@@ -191,3 +191,4 @@ function emptyForm() {
   return { name: "", setup_grade: "", market: "", timeframes: "", entry_rules: "", confirmation_rules: "", invalidation_rules: "", risk_rules: "", management_rules: "", notes: "", checklist: [], active: true };
 }
 
+
