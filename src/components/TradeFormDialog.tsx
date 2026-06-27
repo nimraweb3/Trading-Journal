@@ -13,14 +13,32 @@ interface TradeFormProps {
   trade?: any | null;
 }
 
-const PAIRS = ["GBPUSD", "EURUSD", "NAS100", "XAUUSD", "USDJPY", "GBPJPY", "BTCUSD", "ES", "NQ"];
+const DEFAULT_PAIRS = ["GBPUSD", "EURUSD", "NAS100", "XAUUSD", "USDJPY", "GBPJPY", "BTCUSD", "ES", "NQ"];
+const PAIRS_STORAGE_KEY = "tradebook.customPairs";
 const SESSIONS = ["Asia", "London", "New York", "Overlap"];
 const KILLZONES = ["London Open", "NY Open", "8-9 AM", "Silver Bullet", "London Close"];
 const GRADES = ["A+", "A", "B+", "B", "C", "F"];
 const RESULTS = ["win", "loss", "breakeven"] as const;
+const MISTAKE_PRESETS = [
+  "Overtrading",
+  "Random trade",
+  "FOMO entry",
+  "Revenge trade",
+  "No stop loss",
+  "Moved stop loss",
+  "Early exit",
+  "Late entry",
+  "No trade plan",
+  "Oversized position",
+  "Traded against trend",
+  "Ignored rules",
+  "Chased price",
+  "Forced setup",
+];
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
 
 export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
   const qc = useQueryClient();
