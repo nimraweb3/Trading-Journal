@@ -133,9 +133,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
       </div>
 
-      <main className="flex-1 min-w-0 pt-32 md:pt-0">
+      <main key={pathname} className="flex-1 min-w-0 pt-32 md:pt-0 animate-route">
         {children}
       </main>
+
 
       <CalculatorsDialog open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>
