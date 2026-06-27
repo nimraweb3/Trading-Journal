@@ -50,8 +50,24 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<any[]>([]);
+  const [customPairs, setCustomPairs] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem(PAIRS_STORAGE_KEY) ?? "[]"); } catch { return []; }
+  });
+  const allPairs = Array.from(new Set([...DEFAULT_PAIRS, ...customPairs]));
+  const addCustomPair = () => {
+    const v = window.prompt("Add a new symbol (e.g. SOLUSD, US30):");
+    if (!v) return;
+    const sym = v.trim().toUpperCase();
+    if (!sym) return;
+    const next = Array.from(new Set([...customPairs, sym]));
+    setCustomPairs(next);
+    try { localStorage.setItem(PAIRS_STORAGE_KEY, JSON.stringify(next)); } catch {}
+    setForm((f: any) => ({ ...f, pair: sym }));
+  };
 
   const [form, setForm] = useState<any>({});
+
 
   useEffect(() => {
     if (trade) {
