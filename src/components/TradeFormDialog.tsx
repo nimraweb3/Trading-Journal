@@ -238,10 +238,17 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
           </Field>
 
           <Field label="Pair">
-            <select className={inputCls} value={form.pair} onChange={(e) => setForm({ ...form, pair: e.target.value })}>
-              {PAIRS.map((p) => <option key={p}>{p}</option>)}
-            </select>
+            <div className="flex gap-2">
+              <select className={inputCls} value={form.pair ?? ""} onChange={(e) => setForm({ ...form, pair: e.target.value })}>
+                {allPairs.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <button type="button" onClick={addCustomPair}
+                className="shrink-0 rounded-lg px-3 text-xs border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-accent/40">
+                + Add
+              </button>
+            </div>
           </Field>
+
           <Field label="Direction">
             <div className="flex gap-2">
               {(["buy", "sell"] as const).map((d) => (
