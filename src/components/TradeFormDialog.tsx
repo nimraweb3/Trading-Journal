@@ -310,7 +310,10 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
           </div>
 
           <Field label="Notes" className="md:col-span-2"><textarea className={`${inputCls} min-h-20`} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
-          <Field label="Mistakes / Rule violations" className="md:col-span-2"><textarea className={`${inputCls} min-h-16`} value={form.mistakes ?? ""} onChange={(e) => setForm({ ...form, mistakes: e.target.value })} /></Field>
+          <Field label="Mistakes / Rule violations" className="md:col-span-2">
+            <MistakesPicker value={form.mistakes ?? ""} onChange={(v) => setForm({ ...form, mistakes: v })} />
+          </Field>
+
           <Field label="Lessons learned" className="md:col-span-2"><textarea className={`${inputCls} min-h-16`} value={form.lessons ?? ""} onChange={(e) => setForm({ ...form, lessons: e.target.value })} /></Field>
 
           <Field label="Chart screenshots (max 5MB each)" className="md:col-span-2">
