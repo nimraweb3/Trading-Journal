@@ -9,7 +9,7 @@ import { formatCurrency, formatPercent } from "@/lib/format";
 import { useAccountContext } from "@/lib/account-context";
 
 export const Route = createFileRoute("/_authenticated/accounts")({
-  head: () => ({ meta: [{ title: "Accounts — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Accounts — TradeBook" }] }),
   component: AccountsPage,
 });
 

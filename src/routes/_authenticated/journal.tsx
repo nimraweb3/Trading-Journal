@@ -11,7 +11,7 @@ import { downloadCsv, toCsv } from "@/lib/csv-export";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/journal")({
-  head: () => ({ meta: [{ title: "Journal — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Journal — TradeBook" }] }),
   component: Journal,
 });
 
@@ -64,7 +64,7 @@ function Journal() {
       result: t.result ?? "", pnl: t.pnl, grade: t.grade ?? "",
       notes: t.notes ?? "", mistakes: t.mistakes ?? "", lessons: t.lessons ?? "",
     }));
-    downloadCsv(`ironbook-trades-${new Date().toISOString().slice(0,10)}.csv`, toCsv(rows));
+    downloadCsv(`tradebook-trades-${new Date().toISOString().slice(0,10)}.csv`, toCsv(rows));
     toast.success(`Exported ${rows.length} trades`);
   }
 

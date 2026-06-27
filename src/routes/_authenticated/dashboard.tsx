@@ -13,7 +13,7 @@ import { useAccountContext } from "@/lib/account-context";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — TradeBook" }] }),
   component: Dashboard,
 });
 

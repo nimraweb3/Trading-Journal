@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_authenticated/checklists")({
-  head: () => ({ meta: [{ title: "Checklists — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Checklists — TradeBook" }] }),
   component: ChecklistsPage,
 });
 

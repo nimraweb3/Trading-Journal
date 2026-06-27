@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
-    meta: [{ title: "Sign in — Ironbook" }, { name: "description", content: "Sign in to your trading journal." }],
+    meta: [{ title: "Sign in — TradeBook" }, { name: "description", content: "Sign in to your trading journal." }],
   }),
   component: AuthPage,
 });
@@ -76,7 +76,7 @@ function AuthPage() {
               <span style={{ fontFamily: "var(--font-display)" }} className="text-xl">I</span>
             </div>
             <div>
-              <div style={{ fontFamily: "var(--font-display)" }} className="text-2xl">Ironbook</div>
+              <div style={{ fontFamily: "var(--font-display)" }} className="text-2xl">TradeBook</div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">ICT / SMC Trading Journal</div>
             </div>
           </div>
@@ -102,7 +102,7 @@ function AuthPage() {
             ))}
           </div>
         </div>
-        <div className="relative text-xs text-muted-foreground">© Ironbook</div>
+        <div className="relative text-xs text-muted-foreground">© TradeBook</div>
       </div>
 
       {/* Right form */}

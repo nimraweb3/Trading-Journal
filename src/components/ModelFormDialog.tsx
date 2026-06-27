@@ -19,9 +19,11 @@ export function ModelFormDialog({ open, onClose, model }: { open: boolean; onClo
       setForm({
         ...model,
         timeframes: (model.timeframes ?? []).join(", "),
+        checklist: Array.isArray(model.checklist) ? model.checklist : [],
       });
     } else setForm(emptyForm());
   }, [model, open]);
+
 
   const save = useMutation({
     mutationFn: async () => {
@@ -39,8 +41,10 @@ export function ModelFormDialog({ open, onClose, model }: { open: boolean; onClo
         risk_rules: form.risk_rules || null,
         management_rules: form.management_rules || null,
         notes: form.notes || null,
+        checklist: (form.checklist ?? []).filter((s: string) => s && s.trim()),
         active: !!form.active,
       };
+
       if (isEdit) {
         const { error } = await supabase.from("trading_models").update(payload).eq("id", model.id);
         if (error) throw error;
@@ -98,11 +102,56 @@ export function ModelFormDialog({ open, onClose, model }: { open: boolean; onClo
           <F label="Risk management rules" col2><Area value={form.risk_rules} onChange={(v) => setForm({ ...form, risk_rules: v })} /></F>
           <F label="Trade management rules" col2><Area value={form.management_rules} onChange={(v) => setForm({ ...form, management_rules: v })} /></F>
           <F label="Notes & lessons" col2><Area value={form.notes} onChange={(v) => setForm({ ...form, notes: v })} /></F>
+
+          <div className="md:col-span-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Pre-trade checklist</span>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, checklist: [...(form.checklist ?? []), ""] })}
+                className="text-xs rounded-md border border-white/10 px-2.5 py-1 hover:bg-white/[0.05]"
+              >
+                + Add item
+              </button>
+            </div>
+            <div className="space-y-2">
+              {(form.checklist ?? []).length === 0 && (
+                <p className="text-xs text-muted-foreground italic">
+                  Add steps you confirm before taking this setup (e.g. HTF bias aligned, killzone active, FVG mitigated).
+                </p>
+              )}
+              {(form.checklist ?? []).map((item: string, i: number) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-5 text-right tabular-nums">{i + 1}.</span>
+                  <input
+                    className={inputCls}
+                    value={item}
+                    placeholder="Checklist item"
+                    onChange={(e) => {
+                      const next = [...form.checklist];
+                      next[i] = e.target.value;
+                      setForm({ ...form, checklist: next });
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, checklist: form.checklist.filter((_: any, j: number) => j !== i) })}
+                    className="text-muted-foreground hover:text-loss text-sm px-2"
+                    aria-label="Remove item"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <label className="flex items-center gap-2 md:col-span-2 text-sm">
             <input type="checkbox" checked={!!form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} />
             Active strategy
           </label>
         </div>
+
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-glass-border sticky bottom-0 glass-strong">
           <div>
             {isEdit && (
@@ -139,5 +188,7 @@ function F({ label, children, col2 }: { label: string; children: React.ReactNode
   );
 }
 function emptyForm() {
-  return { name: "", setup_grade: "", market: "", timeframes: "", entry_rules: "", confirmation_rules: "", invalidation_rules: "", risk_rules: "", management_rules: "", notes: "", active: true };
+  return { name: "", setup_grade: "", market: "", timeframes: "", entry_rules: "", confirmation_rules: "", invalidation_rules: "", risk_rules: "", management_rules: "", notes: "", checklist: [], active: true };
 }
+
+

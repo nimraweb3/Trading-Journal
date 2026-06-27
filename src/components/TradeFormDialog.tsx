@@ -13,14 +13,32 @@ interface TradeFormProps {
   trade?: any | null;
 }
 
-const PAIRS = ["GBPUSD", "EURUSD", "NAS100", "XAUUSD", "USDJPY", "GBPJPY", "BTCUSD", "ES", "NQ"];
+const DEFAULT_PAIRS = ["GBPUSD", "EURUSD", "NAS100", "XAUUSD", "USDJPY", "GBPJPY", "BTCUSD", "ES", "NQ"];
+const PAIRS_STORAGE_KEY = "tradebook.customPairs";
 const SESSIONS = ["Asia", "London", "New York", "Overlap"];
 const KILLZONES = ["London Open", "NY Open", "8-9 AM", "Silver Bullet", "London Close"];
 const GRADES = ["A+", "A", "B+", "B", "C", "F"];
 const RESULTS = ["win", "loss", "breakeven"] as const;
+const MISTAKE_PRESETS = [
+  "Overtrading",
+  "Random trade",
+  "FOMO entry",
+  "Revenge trade",
+  "No stop loss",
+  "Moved stop loss",
+  "Early exit",
+  "Late entry",
+  "No trade plan",
+  "Oversized position",
+  "Traded against trend",
+  "Ignored rules",
+  "Chased price",
+  "Forced setup",
+];
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
 
 export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
   const qc = useQueryClient();
@@ -32,8 +50,24 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<any[]>([]);
+  const [customPairs, setCustomPairs] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(localStorage.getItem(PAIRS_STORAGE_KEY) ?? "[]"); } catch { return []; }
+  });
+  const allPairs = Array.from(new Set([...DEFAULT_PAIRS, ...customPairs]));
+  const addCustomPair = () => {
+    const v = window.prompt("Add a new symbol (e.g. SOLUSD, US30):");
+    if (!v) return;
+    const sym = v.trim().toUpperCase();
+    if (!sym) return;
+    const next = Array.from(new Set([...customPairs, sym]));
+    setCustomPairs(next);
+    try { localStorage.setItem(PAIRS_STORAGE_KEY, JSON.stringify(next)); } catch {}
+    setForm((f: any) => ({ ...f, pair: sym }));
+  };
 
   const [form, setForm] = useState<any>({});
+
 
   useEffect(() => {
     if (trade) {
@@ -204,10 +238,17 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
           </Field>
 
           <Field label="Pair">
-            <select className={inputCls} value={form.pair} onChange={(e) => setForm({ ...form, pair: e.target.value })}>
-              {PAIRS.map((p) => <option key={p}>{p}</option>)}
-            </select>
+            <div className="flex gap-2">
+              <select className={inputCls} value={form.pair ?? ""} onChange={(e) => setForm({ ...form, pair: e.target.value })}>
+                {allPairs.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <button type="button" onClick={addCustomPair}
+                className="shrink-0 rounded-lg px-3 text-xs border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-accent/40">
+                + Add
+              </button>
+            </div>
           </Field>
+
           <Field label="Direction">
             <div className="flex gap-2">
               {(["buy", "sell"] as const).map((d) => (
@@ -269,7 +310,10 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
           </div>
 
           <Field label="Notes" className="md:col-span-2"><textarea className={`${inputCls} min-h-20`} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
-          <Field label="Mistakes / Rule violations" className="md:col-span-2"><textarea className={`${inputCls} min-h-16`} value={form.mistakes ?? ""} onChange={(e) => setForm({ ...form, mistakes: e.target.value })} /></Field>
+          <Field label="Mistakes / Rule violations" className="md:col-span-2">
+            <MistakesPicker value={form.mistakes ?? ""} onChange={(v) => setForm({ ...form, mistakes: v })} />
+          </Field>
+
           <Field label="Lessons learned" className="md:col-span-2"><textarea className={`${inputCls} min-h-16`} value={form.lessons ?? ""} onChange={(e) => setForm({ ...form, lessons: e.target.value })} /></Field>
 
           <Field label="Chart screenshots (max 5MB each)" className="md:col-span-2">
@@ -350,3 +394,57 @@ function ImagePreview({ path, onRemove }: { path: string; onRemove: () => void }
     </div>
   );
 }
+
+function MistakesPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const selected = value ? value.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const toggle = (m: string) => {
+    const has = selected.some((s) => s.toLowerCase() === m.toLowerCase());
+    const next = has ? selected.filter((s) => s.toLowerCase() !== m.toLowerCase()) : [...selected, m];
+    onChange(next.join(", "));
+  };
+  const isOn = (m: string) => selected.some((s) => s.toLowerCase() === m.toLowerCase());
+  const customs = selected.filter((s) => !MISTAKE_PRESETS.some((p) => p.toLowerCase() === s.toLowerCase()));
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-1.5">
+        {MISTAKE_PRESETS.map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => toggle(m)}
+            className={`rounded-full px-3 py-1 text-xs border transition ${
+              isOn(m)
+                ? "bg-loss/20 border-loss/40 text-loss"
+                : "border-white/10 bg-white/[0.03] text-muted-foreground hover:text-foreground hover:border-white/20"
+            }`}
+          >
+            {m}
+          </button>
+        ))}
+        {customs.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => toggle(c)}
+            className="rounded-full px-3 py-1 text-xs border bg-loss/20 border-loss/40 text-loss"
+          >
+            {c} ×
+          </button>
+        ))}
+      </div>
+      <input
+        className={inputCls}
+        placeholder="Add custom mistake and press Enter…"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const v = (e.target as HTMLInputElement).value.trim();
+            if (v && !isOn(v)) onChange([...selected, v].join(", "));
+            (e.target as HTMLInputElement).value = "";
+          }
+        }}
+      />
+    </div>
+  );
+}
+

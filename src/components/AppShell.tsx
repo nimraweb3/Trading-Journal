@@ -53,7 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span style={{ fontFamily: "var(--font-display)" }} className="text-lg leading-none">I</span>
           </div>
           <div className="flex flex-col">
-            <span style={{ fontFamily: "var(--font-display)" }} className="text-xl leading-tight">Ironbook</span>
+            <span style={{ fontFamily: "var(--font-display)" }} className="text-xl leading-tight">TradeBook</span>
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Trading Journal</span>
           </div>
         </Link>
@@ -106,7 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="size-8 rounded-lg gradient-maroon flex items-center justify-center">
               <span style={{ fontFamily: "var(--font-display)" }} className="leading-none">I</span>
             </div>
-            <span style={{ fontFamily: "var(--font-display)" }} className="text-lg">Ironbook</span>
+            <span style={{ fontFamily: "var(--font-display)" }} className="text-lg">TradeBook</span>
           </Link>
           <div className="flex-1 min-w-0"><AccountSwitcher compact /></div>
           <button onClick={handleSignOut} className="text-muted-foreground hover:text-foreground shrink-0" aria-label="Sign out">
@@ -133,9 +133,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
       </div>
 
-      <main className="flex-1 min-w-0 pt-32 md:pt-0">
+      <main key={pathname} className="flex-1 min-w-0 pt-32 md:pt-0 animate-route">
         {children}
       </main>
+
 
       <CalculatorsDialog open={calcOpen} onClose={() => setCalcOpen(false)} />
     </div>

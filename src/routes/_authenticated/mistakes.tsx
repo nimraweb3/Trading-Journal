@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/_authenticated/mistakes")({
-  head: () => ({ meta: [{ title: "Mistakes — Ironbook" }] }),
+  head: () => ({ meta: [{ title: "Mistakes — TradeBook" }] }),
   component: MistakesPage,
 });
 
