@@ -188,5 +188,6 @@ function F({ label, children, col2 }: { label: string; children: React.ReactNode
   );
 }
 function emptyForm() {
-  return { name: "", setup_grade: "", market: "", timeframes: "", entry_rules: "", confirmation_rules: "", invalidation_rules: "", risk_rules: "", management_rules: "", notes: "", active: true };
+  return { name: "", setup_grade: "", market: "", timeframes: "", entry_rules: "", confirmation_rules: "", invalidation_rules: "", risk_rules: "", management_rules: "", notes: "", checklist: [], active: true };
 }
+
