@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { X, Upload, Trash2, ExternalLink } from "lucide-react";
+import { X, Upload, Trash2, ExternalLink, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { useAccountContext } from "@/lib/account-context";
@@ -231,8 +231,13 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
             </select>
           </Field>
           <Field label="Strategy">
-            <select className={inputCls} value={form.model_id ?? ""} onChange={(e) => setForm({ ...form, model_id: e.target.value })}>
+            <select className={inputCls} value={form.model_id || (form.model === "Random trade" ? "__random__" : "")} onChange={(e) => {
+              const v = e.target.value;
+              if (v === "__random__") setForm({ ...form, model_id: "", model: "Random trade" });
+              else setForm({ ...form, model_id: v, model: "" });
+            }}>
               <option value="">—</option>
+              <option value="__random__">⚡ Random trade (no strategy)</option>
               {models.map((m: any) => <option key={m.id} value={m.id}>{m.name}{m.setup_grade ? ` · ${m.setup_grade}` : ""}</option>)}
             </select>
           </Field>
@@ -319,14 +324,20 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
           <Field label="Chart screenshots (max 5MB each)" className="md:col-span-2">
             <div className="flex flex-wrap gap-3">
               {existingImages.map((img) => <ImagePreview key={img.id} path={img.storage_path} onRemove={() => deleteImage(img)} />)}
-              {pendingFiles.map((f, i) => (
-                <div key={i} className="relative w-28 h-20 rounded-lg overflow-hidden border border-glass-border">
-                  <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
-                  <button type="button" onClick={() => setPendingFiles((arr) => arr.filter((_, j) => j !== i))} className="absolute top-1 right-1 bg-black/60 rounded p-0.5">
-                    <Trash2 className="size-3" />
-                  </button>
-                </div>
-              ))}
+              {pendingFiles.map((f, i) => {
+                const url = URL.createObjectURL(f);
+                return (
+                  <div key={i} className="relative w-28 h-20 rounded-lg overflow-hidden border border-glass-border group">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <a href={url} download={f.name} className="absolute top-1 left-1 bg-black/60 rounded p-0.5 opacity-0 group-hover:opacity-100 transition" title="Download">
+                      <Download className="size-3" />
+                    </a>
+                    <button type="button" onClick={() => setPendingFiles((arr) => arr.filter((_, j) => j !== i))} className="absolute top-1 right-1 bg-black/60 rounded p-0.5">
+                      <Trash2 className="size-3" />
+                    </button>
+                  </div>
+                );
+              })}
               <button type="button" onClick={() => fileInputRef.current?.click()}
                 className="w-28 h-20 rounded-lg border border-dashed border-white/15 flex flex-col items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground hover:border-accent/40">
                 <Upload className="size-4" /> Add
@@ -381,13 +392,25 @@ function Field({ label, children, className = "" }: { label: string; children: a
 function ImagePreview({ path, onRemove }: { path: string; onRemove: () => void }) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
-    supabase.storage.from("trade-images").createSignedUrl(path, 3600).then(({ data }) => {
+    supabase.storage.from("trade-images").createSignedUrl(path, 3600, { download: false }).then(({ data }) => {
       if (data) setUrl(data.signedUrl);
     });
   }, [path]);
+  const filename = path.split("/").pop() || "trade-image";
+  const download = async () => {
+    const { data } = await supabase.storage.from("trade-images").download(path);
+    if (!data) return;
+    const a = document.createElement("a");
+    const obj = URL.createObjectURL(data);
+    a.href = obj; a.download = filename; a.click();
+    URL.revokeObjectURL(obj);
+  };
   return (
-    <div className="relative w-28 h-20 rounded-lg overflow-hidden border border-glass-border bg-black/30">
-      {url && <img src={url} alt="" className="w-full h-full object-cover" />}
+    <div className="relative w-28 h-20 rounded-lg overflow-hidden border border-glass-border bg-black/30 group">
+      {url && <a href={url} target="_blank" rel="noopener noreferrer"><img src={url} alt="" className="w-full h-full object-cover" /></a>}
+      <button type="button" onClick={download} className="absolute top-1 left-1 bg-black/60 rounded p-0.5 opacity-0 group-hover:opacity-100 transition" title="Download">
+        <Download className="size-3" />
+      </button>
       <button type="button" onClick={onRemove} className="absolute top-1 right-1 bg-black/60 rounded p-0.5">
         <Trash2 className="size-3" />
       </button>

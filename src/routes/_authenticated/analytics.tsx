@@ -6,6 +6,7 @@ import { profileQuery, tradesQuery } from "@/lib/queries";
 import { groupBy } from "@/lib/trade-stats";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useAccountContext } from "@/lib/account-context";
+import { WeeklyAIReview } from "@/components/WeeklyAIReview";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({ meta: [{ title: "Analytics — TradeBook" }] }),
@@ -35,6 +36,8 @@ function Analytics() {
         <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Analytics</p>
         <h1 style={{ fontFamily: "var(--font-display)" }} className="text-4xl md:text-5xl mt-1">Performance Breakdown</h1>
       </div>
+      <WeeklyAIReview />
+
 
       {trades.length === 0 ? (
         <div className="glass-strong rounded-2xl p-12 text-center text-muted-foreground">
