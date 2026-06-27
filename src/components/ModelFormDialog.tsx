@@ -19,9 +19,11 @@ export function ModelFormDialog({ open, onClose, model }: { open: boolean; onClo
       setForm({
         ...model,
         timeframes: (model.timeframes ?? []).join(", "),
+        checklist: Array.isArray(model.checklist) ? model.checklist : [],
       });
     } else setForm(emptyForm());
   }, [model, open]);
+
 
   const save = useMutation({
     mutationFn: async () => {
