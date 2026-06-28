@@ -70,6 +70,7 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
 
 
   useEffect(() => {
+    let cancelled = false;
     if (trade) {
       setForm({
         ...trade,
@@ -86,10 +87,13 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
         model_id: trade.model_id ?? "",
         tradingview_link: trade.tradingview_link ?? "",
       });
+      setExistingImages([]);
+      setPendingFiles([]);
       supabase.from("trade_images").select("*").eq("trade_id", trade.id).order("position")
-        .then(({ data }) => setExistingImages(data ?? []));
+        .then(({ data }) => { if (!cancelled) setExistingImages(data ?? []); });
     } else {
       setForm({
+
         pair: "GBPUSD",
         direction: "buy",
         trade_date: new Date().toISOString().slice(0, 10),
@@ -119,7 +123,9 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
       setExistingImages([]);
       setPendingFiles([]);
     }
-  }, [trade, open, activeAccountId, accounts.length]);
+    return () => { cancelled = true; };
+  }, [trade?.id, open, activeAccountId, accounts.length]);
+
 
   const num = (v: any) => (v === "" || v === null || v === undefined ? null : Number(v));
 
