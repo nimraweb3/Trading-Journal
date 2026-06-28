@@ -133,7 +133,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
       </div>
 
-      <main key={pathname} className="flex-1 min-w-0 pt-32 md:pt-0 animate-route">
+      <main className="flex-1 min-w-0 pt-32 md:pt-0">
         {children}
       </main>
 
