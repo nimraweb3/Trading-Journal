@@ -123,7 +123,9 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
       setExistingImages([]);
       setPendingFiles([]);
     }
-  }, [trade, open, activeAccountId, accounts.length]);
+    return () => { cancelled = true; };
+  }, [trade?.id, open, activeAccountId, accounts.length]);
+
 
   const num = (v: any) => (v === "" || v === null || v === undefined ? null : Number(v));
 
