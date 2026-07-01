@@ -164,6 +164,7 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
         grade: form.grade || null,
         model: form.model || (form.model_id ? models.find((m: any) => m.id === form.model_id)?.name ?? null : null),
         notes: form.notes || null,
+        rationale: form.rationale || null,
         emotions_before: form.emotions_before || null,
         emotions_after: form.emotions_after || null,
         mistakes: form.mistakes || null,
