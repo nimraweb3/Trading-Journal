@@ -322,6 +322,10 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
             <Field label="Emotions after"><input className={inputCls} value={form.emotions_after ?? ""} onChange={(e) => setForm({ ...form, emotions_after: e.target.value })} placeholder="confident, frustrated" /></Field>
           </div>
 
+          <Field label="Why I took this trade (basis / thesis)" className="md:col-span-2">
+            <textarea className={`${inputCls} min-h-24`} value={form.rationale ?? ""} onChange={(e) => setForm({ ...form, rationale: e.target.value })}
+              placeholder="e.g. HTF bullish BOS, price swept Asia low into 1H FVG + OB confluence, DXY diverging, waiting for LTF MSS confirmation before entry…" />
+          </Field>
           <Field label="Notes" className="md:col-span-2"><textarea className={`${inputCls} min-h-20`} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
           <Field label="Mistakes / Rule violations" className="md:col-span-2">
             <MistakesPicker value={form.mistakes ?? ""} onChange={(v) => setForm({ ...form, mistakes: v })} />
