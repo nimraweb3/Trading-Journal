@@ -115,6 +115,7 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
         account_id: activeAccountId ?? accounts[0]?.id ?? "",
         tradingview_link: "",
         notes: "",
+        rationale: "",
         emotions_before: "",
         emotions_after: "",
         mistakes: "",
