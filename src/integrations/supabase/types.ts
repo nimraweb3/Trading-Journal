@@ -509,6 +509,7 @@ export type Database = {
           pair: string
           pnl: number
           position_size: number | null
+          rationale: string | null
           result: Database["public"]["Enums"]["trade_result"] | null
           risk_percent: number | null
           rr_achieved: number | null
@@ -541,6 +542,7 @@ export type Database = {
           pair: string
           pnl?: number
           position_size?: number | null
+          rationale?: string | null
           result?: Database["public"]["Enums"]["trade_result"] | null
           risk_percent?: number | null
           rr_achieved?: number | null
@@ -573,6 +575,7 @@ export type Database = {
           pair?: string
           pnl?: number
           position_size?: number | null
+          rationale?: string | null
           result?: Database["public"]["Enums"]["trade_result"] | null
           risk_percent?: number | null
           rr_achieved?: number | null
