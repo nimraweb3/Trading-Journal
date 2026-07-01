@@ -115,6 +115,7 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
         account_id: activeAccountId ?? accounts[0]?.id ?? "",
         tradingview_link: "",
         notes: "",
+        rationale: "",
         emotions_before: "",
         emotions_after: "",
         mistakes: "",
@@ -163,6 +164,7 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
         grade: form.grade || null,
         model: form.model || (form.model_id ? models.find((m: any) => m.id === form.model_id)?.name ?? null : null),
         notes: form.notes || null,
+        rationale: form.rationale || null,
         emotions_before: form.emotions_before || null,
         emotions_after: form.emotions_after || null,
         mistakes: form.mistakes || null,
@@ -320,6 +322,10 @@ export function TradeFormDialog({ open, onClose, trade }: TradeFormProps) {
             <Field label="Emotions after"><input className={inputCls} value={form.emotions_after ?? ""} onChange={(e) => setForm({ ...form, emotions_after: e.target.value })} placeholder="confident, frustrated" /></Field>
           </div>
 
+          <Field label="Why I took this trade (basis / thesis)" className="md:col-span-2">
+            <textarea className={`${inputCls} min-h-24`} value={form.rationale ?? ""} onChange={(e) => setForm({ ...form, rationale: e.target.value })}
+              placeholder="e.g. HTF bullish BOS, price swept Asia low into 1H FVG + OB confluence, DXY diverging, waiting for LTF MSS confirmation before entry…" />
+          </Field>
           <Field label="Notes" className="md:col-span-2"><textarea className={`${inputCls} min-h-20`} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
           <Field label="Mistakes / Rule violations" className="md:col-span-2">
             <MistakesPicker value={form.mistakes ?? ""} onChange={(v) => setForm({ ...form, mistakes: v })} />
