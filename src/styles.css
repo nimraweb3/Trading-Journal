@@ -241,3 +241,26 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: oklch(1 0 0 / 6%); border-radius: 8px; }
 ::-webkit-scrollbar-thumb:hover { background: oklch(1 0 0 / 12%); }
+
+/* Pointer cursor on interactive elements */
+button:not(:disabled),
+a[href],
+[role="button"]:not([aria-disabled="true"]),
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+summary,
+label[for],
+select:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="file"]:not(:disabled)::-webkit-file-upload-button {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
