@@ -409,7 +409,9 @@ function ImagePreview({ path, onRemove }: { path: string; onRemove: () => void }
     });
   }, [path]);
   const filename = path.split("/").pop() || "trade-image";
-  const download = async () => {
+  const openFull = () => { if (url) window.open(url, "_blank", "noopener,noreferrer"); };
+  const download = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     const { data } = await supabase.storage.from("trade-images").download(path);
     if (!data) return;
     const a = document.createElement("a");
@@ -417,14 +419,21 @@ function ImagePreview({ path, onRemove }: { path: string; onRemove: () => void }
     a.href = obj; a.download = filename; a.click();
     URL.revokeObjectURL(obj);
   };
+  const remove = (e: React.MouseEvent) => { e.stopPropagation(); onRemove(); };
   return (
-    <div className="relative w-28 h-20 rounded-lg overflow-hidden border border-glass-border bg-black/30 group">
-      {url && <a href={url} target="_blank" rel="noopener noreferrer"><img src={url} alt="" className="w-full h-full object-cover" /></a>}
-      <button type="button" onClick={download} className="absolute top-1 left-1 bg-black/60 rounded p-0.5 opacity-0 group-hover:opacity-100 transition" title="Download">
-        <Download className="size-3" />
+    <div className="relative w-32 h-24 rounded-lg overflow-hidden border border-glass-border bg-black/30 group">
+      <button type="button" onClick={openFull} className="block w-full h-full cursor-zoom-in" title="Open full size">
+        {url && <img src={url} alt="" className="w-full h-full object-cover pointer-events-none" />}
       </button>
-      <button type="button" onClick={onRemove} className="absolute top-1 right-1 bg-black/60 rounded p-0.5">
-        <Trash2 className="size-3" />
+      <button type="button" onClick={download}
+        className="absolute top-1 left-1 bg-black/70 hover:bg-black/90 rounded-md p-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 transition"
+        title="Download">
+        <Download className="size-3.5" />
+      </button>
+      <button type="button" onClick={remove}
+        className="absolute top-1 right-1 bg-black/70 hover:bg-loss/80 rounded-md p-1.5 opacity-0 group-hover:opacity-100 focus:opacity-100 transition"
+        title="Remove">
+        <Trash2 className="size-3.5" />
       </button>
     </div>
   );
