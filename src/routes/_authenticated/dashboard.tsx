@@ -140,6 +140,42 @@ function Dashboard() {
         <Heatmap days={heatmap} currency={currency} />
       </div>
 
+      {/* Zella-style Performance Insights */}
+      <div className="grid lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1 glass-strong rounded-2xl p-5 md:p-7">
+          <h2 style={{ fontFamily: "var(--font-display)" }} className="text-2xl mb-4">Performance Insights</h2>
+          <div className="space-y-3">
+            <InsightRow label="Best trading day" value={insights.bestDay ? shortDate(insights.bestDay.date) : "—"} sub={insights.bestDay ? formatCurrency(insights.bestDay.pnl, currency) : ""} tone="win" />
+            <InsightRow label="Worst trading day" value={insights.worstDay ? shortDate(insights.worstDay.date) : "—"} sub={insights.worstDay ? formatCurrency(insights.worstDay.pnl, currency) : ""} tone="loss" />
+            <InsightRow label="Most-traded pair" value={insights.mostTraded?.pair ?? "—"} sub={insights.mostTraded ? `${insights.mostTraded.count} trades` : ""} />
+            <InsightRow label="Best pair (net)" value={insights.bestPair?.pair ?? "—"} sub={insights.bestPair ? formatCurrency(insights.bestPair.pnl, currency) : ""} tone="win" />
+            <InsightRow label="Worst pair (net)" value={insights.worstPair?.pair ?? "—"} sub={insights.worstPair ? formatCurrency(insights.worstPair.pnl, currency) : ""} tone="loss" />
+          </div>
+        </div>
+        <div className="lg:col-span-2 glass-strong rounded-2xl p-5 md:p-7">
+          <h2 style={{ fontFamily: "var(--font-display)" }} className="text-2xl mb-1">Day of Week P&L</h2>
+          <p className="text-xs text-muted-foreground mb-3">Which weekdays actually make you money.</p>
+          {dow.every((d) => d.pnl === 0) ? (
+            <div className="h-40 flex items-center justify-center text-sm text-muted-foreground">No data yet</div>
+          ) : (
+            <div className="h-48">
+              <ResponsiveContainer>
+                <BarChart data={dow}>
+                  <XAxis dataKey="day" stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                  <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                  <Tooltip contentStyle={{ background: "rgba(20,10,12,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 12 }} />
+                  <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
+                    {dow.map((m, i) => (
+                      <rect key={i} fill={m.pnl >= 0 ? "hsl(var(--win))" : "hsl(var(--loss))"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Secondary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <StatCard label="Avg RR" value={`${formatNumber(stats.avgRR)}R`} />
@@ -157,7 +193,7 @@ function Dashboard() {
         {recent.length === 0 ? (
           <div className="py-16 text-center text-muted-foreground">
             <p className="text-sm">No trades yet. Log your first setup.</p>
-            <button onClick={() => setOpen(true)} className="mt-4 gradient-maroon rounded-lg px-4 py-2 text-sm">Add your first trade</button>
+            <button onClick={() => { setEditing(null); setOpen(true); }} className="mt-4 gradient-maroon rounded-lg px-4 py-2 text-sm">Add your first trade</button>
           </div>
         ) : (
           <div className="overflow-x-auto -mx-2">
@@ -175,19 +211,20 @@ function Dashboard() {
               </thead>
               <tbody>
                 {recent.map((t) => (
-                  <tr key={t.id} className="border-t border-white/5 hover:bg-white/[0.03]">
-                    <td className="px-2 py-3 text-muted-foreground tabular-nums">{shortDate(t.trade_date)}</td>
-                    <td className="px-2 py-3 font-medium">{t.pair}</td>
-                    <td className="px-2 py-3">
+                  <tr key={t.id} onClick={() => { setEditing(t); setOpen(true); }}
+                      className="border-t border-white/5 hover:bg-white/[0.05] cursor-pointer transition">
+                    <td className="px-2 py-3.5 text-muted-foreground tabular-nums">{shortDate(t.trade_date)}</td>
+                    <td className="px-2 py-3.5 font-medium">{t.pair}</td>
+                    <td className="px-2 py-3.5">
                       <span className={`inline-flex items-center gap-1 text-xs ${t.direction === "buy" ? "text-win" : "text-loss"}`}>
                         {t.direction === "buy" ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
                         {t.direction}
                       </span>
                     </td>
-                    <td className="px-2 py-3 text-muted-foreground">{t.session ?? "—"}</td>
-                    <td className="px-2 py-3 text-center"><GradeBadge grade={t.grade} /></td>
-                    <td className="px-2 py-3 text-right tabular-nums">{t.rr_achieved != null ? `${Number(t.rr_achieved).toFixed(2)}R` : "—"}</td>
-                    <td className={`px-2 py-3 text-right tabular-nums ${t.pnl > 0 ? "text-win" : t.pnl < 0 ? "text-loss" : ""}`}>
+                    <td className="px-2 py-3.5 text-muted-foreground">{t.session ?? "—"}</td>
+                    <td className="px-2 py-3.5 text-center"><GradeBadge grade={t.grade} /></td>
+                    <td className="px-2 py-3.5 text-right tabular-nums">{t.rr_achieved != null ? `${Number(t.rr_achieved).toFixed(2)}R` : "—"}</td>
+                    <td className={`px-2 py-3.5 text-right tabular-nums ${t.pnl > 0 ? "text-win" : t.pnl < 0 ? "text-loss" : ""}`}>
                       {formatCurrency(t.pnl, currency)}
                     </td>
                   </tr>
@@ -198,7 +235,7 @@ function Dashboard() {
         )}
       </div>
 
-      <TradeFormDialog open={open} onClose={() => setOpen(false)} />
+      <TradeFormDialog open={open} onClose={() => setOpen(false)} trade={editing} />
     </div>
   );
 }
