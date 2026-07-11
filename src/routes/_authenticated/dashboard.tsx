@@ -22,6 +22,7 @@ function Dashboard() {
   const { data: trades = [] } = useQuery(tradesQuery(activeAccountId));
   const { data: profile } = useQuery(profileQuery());
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<any | null>(null);
 
   const startingBalance = activeAccount
     ? Number(activeAccount.starting_balance)
@@ -32,14 +33,12 @@ function Dashboard() {
   const curve = buildEquityCurve(trades, startingBalance);
   const recent = trades.slice(0, 8);
 
-  // streaks
   const streaks = useMemo(() => computeStreaks(trades as any), [trades]);
-  // monthly returns
   const monthly = useMemo(() => monthlyReturns(trades as any), [trades]);
-  // calendar heatmap (last 90 days)
   const heatmap = useMemo(() => dailyHeatmap(trades as any, 84), [trades]);
-  // drawdown curve
   const ddCurve = useMemo(() => curve.map((p) => ({ date: p.date, dd: p.drawdown })), [curve]);
+  const insights = useMemo(() => computeInsights(trades as any), [trades]);
+  const dow = useMemo(() => dayOfWeekPnL(trades as any), [trades]);
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-10 max-w-7xl mx-auto space-y-8">
@@ -141,6 +140,42 @@ function Dashboard() {
         <Heatmap days={heatmap} currency={currency} />
       </div>
 
+      {/* Zella-style Performance Insights */}
+      <div className="grid lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-1 glass-strong rounded-2xl p-5 md:p-7">
+          <h2 style={{ fontFamily: "var(--font-display)" }} className="text-2xl mb-4">Performance Insights</h2>
+          <div className="space-y-3">
+            <InsightRow label="Best trading day" value={insights.bestDay ? shortDate(insights.bestDay.date) : "—"} sub={insights.bestDay ? formatCurrency(insights.bestDay.pnl, currency) : ""} tone="win" />
+            <InsightRow label="Worst trading day" value={insights.worstDay ? shortDate(insights.worstDay.date) : "—"} sub={insights.worstDay ? formatCurrency(insights.worstDay.pnl, currency) : ""} tone="loss" />
+            <InsightRow label="Most-traded pair" value={insights.mostTraded?.pair ?? "—"} sub={insights.mostTraded ? `${insights.mostTraded.count} trades` : ""} />
+            <InsightRow label="Best pair (net)" value={insights.bestPair?.pair ?? "—"} sub={insights.bestPair ? formatCurrency(insights.bestPair.pnl, currency) : ""} tone="win" />
+            <InsightRow label="Worst pair (net)" value={insights.worstPair?.pair ?? "—"} sub={insights.worstPair ? formatCurrency(insights.worstPair.pnl, currency) : ""} tone="loss" />
+          </div>
+        </div>
+        <div className="lg:col-span-2 glass-strong rounded-2xl p-5 md:p-7">
+          <h2 style={{ fontFamily: "var(--font-display)" }} className="text-2xl mb-1">Day of Week P&L</h2>
+          <p className="text-xs text-muted-foreground mb-3">Which weekdays actually make you money.</p>
+          {dow.every((d) => d.pnl === 0) ? (
+            <div className="h-40 flex items-center justify-center text-sm text-muted-foreground">No data yet</div>
+          ) : (
+            <div className="h-48">
+              <ResponsiveContainer>
+                <BarChart data={dow}>
+                  <XAxis dataKey="day" stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                  <YAxis stroke="rgba(255,255,255,0.3)" fontSize={11} />
+                  <Tooltip contentStyle={{ background: "rgba(20,10,12,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 12 }} />
+                  <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
+                    {dow.map((m, i) => (
+                      <rect key={i} fill={m.pnl >= 0 ? "hsl(var(--win))" : "hsl(var(--loss))"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Secondary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <StatCard label="Avg RR" value={`${formatNumber(stats.avgRR)}R`} />
@@ -158,7 +193,7 @@ function Dashboard() {
         {recent.length === 0 ? (
           <div className="py-16 text-center text-muted-foreground">
             <p className="text-sm">No trades yet. Log your first setup.</p>
-            <button onClick={() => setOpen(true)} className="mt-4 gradient-maroon rounded-lg px-4 py-2 text-sm">Add your first trade</button>
+            <button onClick={() => { setEditing(null); setOpen(true); }} className="mt-4 gradient-maroon rounded-lg px-4 py-2 text-sm">Add your first trade</button>
           </div>
         ) : (
           <div className="overflow-x-auto -mx-2">
@@ -176,19 +211,20 @@ function Dashboard() {
               </thead>
               <tbody>
                 {recent.map((t) => (
-                  <tr key={t.id} className="border-t border-white/5 hover:bg-white/[0.03]">
-                    <td className="px-2 py-3 text-muted-foreground tabular-nums">{shortDate(t.trade_date)}</td>
-                    <td className="px-2 py-3 font-medium">{t.pair}</td>
-                    <td className="px-2 py-3">
+                  <tr key={t.id} onClick={() => { setEditing(t); setOpen(true); }}
+                      className="border-t border-white/5 hover:bg-white/[0.05] cursor-pointer transition">
+                    <td className="px-2 py-3.5 text-muted-foreground tabular-nums">{shortDate(t.trade_date)}</td>
+                    <td className="px-2 py-3.5 font-medium">{t.pair}</td>
+                    <td className="px-2 py-3.5">
                       <span className={`inline-flex items-center gap-1 text-xs ${t.direction === "buy" ? "text-win" : "text-loss"}`}>
                         {t.direction === "buy" ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
                         {t.direction}
                       </span>
                     </td>
-                    <td className="px-2 py-3 text-muted-foreground">{t.session ?? "—"}</td>
-                    <td className="px-2 py-3 text-center"><GradeBadge grade={t.grade} /></td>
-                    <td className="px-2 py-3 text-right tabular-nums">{t.rr_achieved != null ? `${Number(t.rr_achieved).toFixed(2)}R` : "—"}</td>
-                    <td className={`px-2 py-3 text-right tabular-nums ${t.pnl > 0 ? "text-win" : t.pnl < 0 ? "text-loss" : ""}`}>
+                    <td className="px-2 py-3.5 text-muted-foreground">{t.session ?? "—"}</td>
+                    <td className="px-2 py-3.5 text-center"><GradeBadge grade={t.grade} /></td>
+                    <td className="px-2 py-3.5 text-right tabular-nums">{t.rr_achieved != null ? `${Number(t.rr_achieved).toFixed(2)}R` : "—"}</td>
+                    <td className={`px-2 py-3.5 text-right tabular-nums ${t.pnl > 0 ? "text-win" : t.pnl < 0 ? "text-loss" : ""}`}>
                       {formatCurrency(t.pnl, currency)}
                     </td>
                   </tr>
@@ -199,7 +235,7 @@ function Dashboard() {
         )}
       </div>
 
-      <TradeFormDialog open={open} onClose={() => setOpen(false)} />
+      <TradeFormDialog open={open} onClose={() => setOpen(false)} trade={editing} />
     </div>
   );
 }
@@ -300,4 +336,61 @@ function greeting() {
   if (h < 12) return "Good morning";
   if (h < 18) return "Good afternoon";
   return "Good evening";
+}
+
+function InsightRow({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "win" | "loss" }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2.5">
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+        <div className="text-sm truncate">{value}</div>
+      </div>
+      {sub && (
+        <div className={`text-sm tabular-nums shrink-0 ${tone === "win" ? "text-win" : tone === "loss" ? "text-loss" : "text-muted-foreground"}`}>
+          {sub}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function computeInsights(trades: any[]) {
+  const byDay: Record<string, number> = {};
+  const byPair: Record<string, { pnl: number; count: number }> = {};
+  for (const t of trades) {
+    if (t.trade_date) byDay[t.trade_date] = (byDay[t.trade_date] ?? 0) + (t.pnl || 0);
+    if (t.pair) {
+      byPair[t.pair] = byPair[t.pair] ?? { pnl: 0, count: 0 };
+      byPair[t.pair].pnl += t.pnl || 0;
+      byPair[t.pair].count += 1;
+    }
+  }
+  const dayEntries = Object.entries(byDay);
+  const bestDay = dayEntries.length ? dayEntries.reduce((a, b) => (b[1] > a[1] ? b : a)) : null;
+  const worstDay = dayEntries.length ? dayEntries.reduce((a, b) => (b[1] < a[1] ? b : a)) : null;
+  const pairEntries = Object.entries(byPair);
+  const bestPair = pairEntries.length ? pairEntries.reduce((a, b) => (b[1].pnl > a[1].pnl ? b : a)) : null;
+  const worstPair = pairEntries.length ? pairEntries.reduce((a, b) => (b[1].pnl < a[1].pnl ? b : a)) : null;
+  const mostTraded = pairEntries.length ? pairEntries.reduce((a, b) => (b[1].count > a[1].count ? b : a)) : null;
+  return {
+    bestDay: bestDay && bestDay[1] !== 0 ? { date: bestDay[0], pnl: bestDay[1] } : null,
+    worstDay: worstDay && worstDay[1] !== 0 ? { date: worstDay[0], pnl: worstDay[1] } : null,
+    bestPair: bestPair ? { pair: bestPair[0], pnl: bestPair[1].pnl } : null,
+    worstPair: worstPair ? { pair: worstPair[0], pnl: worstPair[1].pnl } : null,
+    mostTraded: mostTraded ? { pair: mostTraded[0], count: mostTraded[1].count } : null,
+  };
+}
+
+function dayOfWeekPnL(trades: any[]) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const totals = [0, 0, 0, 0, 0, 0, 0];
+  for (const t of trades) {
+    if (!t.trade_date) continue;
+    const d = new Date(t.trade_date + "T00:00:00");
+    const idx = d.getDay();
+    totals[idx] += t.pnl || 0;
+  }
+  // Reorder Mon..Fri..Sun for trading week feel
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  return order.map((i) => ({ day: days[i], pnl: Number(totals[i].toFixed(2)) }));
 }
