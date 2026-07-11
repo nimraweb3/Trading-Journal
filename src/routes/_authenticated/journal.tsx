@@ -119,20 +119,20 @@ function Journal() {
               </thead>
               <tbody>
                 {filtered.map((t: any) => (
-                  <tr key={t.id} onClick={() => { setEditing(t); setOpen(true); }} className="border-t border-white/5 hover:bg-white/[0.04] cursor-pointer">
-                    <td className="px-4 py-3 text-muted-foreground tabular-nums">{shortDate(t.trade_date)}</td>
-                    <td className="px-4 py-3 font-medium">{t.pair}</td>
-                    <td className="px-4 py-3">
+                  <tr key={t.id} onClick={() => { setEditing(t); setOpen(true); }} className="border-t border-white/5 hover:bg-white/[0.05] cursor-pointer transition">
+                    <td className="px-4 py-4 text-muted-foreground tabular-nums">{shortDate(t.trade_date)}</td>
+                    <td className="px-4 py-4 font-medium">{t.pair}</td>
+                    <td className="px-4 py-4">
                       <span className={`inline-flex items-center gap-1 text-xs ${t.direction === "buy" ? "text-win" : "text-loss"}`}>
                         {t.direction === "buy" ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
                         {t.direction}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{t.session ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{models.find((m: any) => m.id === t.model_id)?.name ?? t.model ?? "—"}</td>
-                    <td className="px-4 py-3 text-center"><GradeBadge grade={t.grade} /></td>
-                    <td className="px-4 py-3 text-right tabular-nums">{t.rr_achieved != null ? `${Number(t.rr_achieved).toFixed(2)}R` : "—"}</td>
-                    <td className={`px-4 py-3 text-right tabular-nums ${t.pnl > 0 ? "text-win" : t.pnl < 0 ? "text-loss" : ""}`}>
+                    <td className="px-4 py-4 text-muted-foreground">{t.session ?? "—"}</td>
+                    <td className="px-4 py-4 text-muted-foreground">{models.find((m: any) => m.id === t.model_id)?.name ?? t.model ?? "—"}</td>
+                    <td className="px-4 py-4 text-center"><GradeBadge grade={t.grade} /></td>
+                    <td className="px-4 py-4 text-right tabular-nums">{t.rr_achieved != null ? `${Number(t.rr_achieved).toFixed(2)}R` : "—"}</td>
+                    <td className={`px-4 py-4 text-right tabular-nums ${t.pnl > 0 ? "text-win" : t.pnl < 0 ? "text-loss" : ""}`}>
                       {formatCurrency(t.pnl, currency)}
                     </td>
                   </tr>
