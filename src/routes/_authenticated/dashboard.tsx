@@ -22,6 +22,7 @@ function Dashboard() {
   const { data: trades = [] } = useQuery(tradesQuery(activeAccountId));
   const { data: profile } = useQuery(profileQuery());
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<any | null>(null);
 
   const startingBalance = activeAccount
     ? Number(activeAccount.starting_balance)
@@ -32,14 +33,12 @@ function Dashboard() {
   const curve = buildEquityCurve(trades, startingBalance);
   const recent = trades.slice(0, 8);
 
-  // streaks
   const streaks = useMemo(() => computeStreaks(trades as any), [trades]);
-  // monthly returns
   const monthly = useMemo(() => monthlyReturns(trades as any), [trades]);
-  // calendar heatmap (last 90 days)
   const heatmap = useMemo(() => dailyHeatmap(trades as any, 84), [trades]);
-  // drawdown curve
   const ddCurve = useMemo(() => curve.map((p) => ({ date: p.date, dd: p.drawdown })), [curve]);
+  const insights = useMemo(() => computeInsights(trades as any), [trades]);
+  const dow = useMemo(() => dayOfWeekPnL(trades as any), [trades]);
 
   return (
     <div className="px-4 md:px-8 py-6 md:py-10 max-w-7xl mx-auto space-y-8">
