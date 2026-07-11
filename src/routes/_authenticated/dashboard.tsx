@@ -337,3 +337,60 @@ function greeting() {
   if (h < 18) return "Good afternoon";
   return "Good evening";
 }
+
+function InsightRow({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "win" | "loss" }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2.5">
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+        <div className="text-sm truncate">{value}</div>
+      </div>
+      {sub && (
+        <div className={`text-sm tabular-nums shrink-0 ${tone === "win" ? "text-win" : tone === "loss" ? "text-loss" : "text-muted-foreground"}`}>
+          {sub}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function computeInsights(trades: any[]) {
+  const byDay: Record<string, number> = {};
+  const byPair: Record<string, { pnl: number; count: number }> = {};
+  for (const t of trades) {
+    if (t.trade_date) byDay[t.trade_date] = (byDay[t.trade_date] ?? 0) + (t.pnl || 0);
+    if (t.pair) {
+      byPair[t.pair] = byPair[t.pair] ?? { pnl: 0, count: 0 };
+      byPair[t.pair].pnl += t.pnl || 0;
+      byPair[t.pair].count += 1;
+    }
+  }
+  const dayEntries = Object.entries(byDay);
+  const bestDay = dayEntries.length ? dayEntries.reduce((a, b) => (b[1] > a[1] ? b : a)) : null;
+  const worstDay = dayEntries.length ? dayEntries.reduce((a, b) => (b[1] < a[1] ? b : a)) : null;
+  const pairEntries = Object.entries(byPair);
+  const bestPair = pairEntries.length ? pairEntries.reduce((a, b) => (b[1].pnl > a[1].pnl ? b : a)) : null;
+  const worstPair = pairEntries.length ? pairEntries.reduce((a, b) => (b[1].pnl < a[1].pnl ? b : a)) : null;
+  const mostTraded = pairEntries.length ? pairEntries.reduce((a, b) => (b[1].count > a[1].count ? b : a)) : null;
+  return {
+    bestDay: bestDay && bestDay[1] !== 0 ? { date: bestDay[0], pnl: bestDay[1] } : null,
+    worstDay: worstDay && worstDay[1] !== 0 ? { date: worstDay[0], pnl: worstDay[1] } : null,
+    bestPair: bestPair ? { pair: bestPair[0], pnl: bestPair[1].pnl } : null,
+    worstPair: worstPair ? { pair: worstPair[0], pnl: worstPair[1].pnl } : null,
+    mostTraded: mostTraded ? { pair: mostTraded[0], count: mostTraded[1].count } : null,
+  };
+}
+
+function dayOfWeekPnL(trades: any[]) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const totals = [0, 0, 0, 0, 0, 0, 0];
+  for (const t of trades) {
+    if (!t.trade_date) continue;
+    const d = new Date(t.trade_date + "T00:00:00");
+    const idx = d.getDay();
+    totals[idx] += t.pnl || 0;
+  }
+  // Reorder Mon..Fri..Sun for trading week feel
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  return order.map((i) => ({ day: days[i], pnl: Number(totals[i].toFixed(2)) }));
+}
