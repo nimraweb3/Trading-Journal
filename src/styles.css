@@ -120,8 +120,38 @@
   --border: oklch(0.18 0.012 25 / 10%);
   --input: oklch(0.18 0.012 25 / 12%);
   --ring: oklch(0.55 0.18 18 / 50%);
+  --win: oklch(0.55 0.16 155);
+  --loss: oklch(0.52 0.21 22);
+  --breakeven: oklch(0.5 0.04 90);
+  --grade-aplus: oklch(0.5 0.18 18);
   --glass: oklch(0 0 0 / 3%);
   --glass-border: oklch(0 0 0 / 8%);
+  --shadow-glass: 0 1px 0 0 oklch(1 0 0 / 40%) inset, 0 20px 60px -20px oklch(0.18 0.012 25 / 20%);
+}
+
+html.light {
+  color-scheme: light;
+}
+html.light body {
+  background-image:
+    radial-gradient(at 0% 0%, oklch(0.55 0.18 18 / 8%) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, oklch(0.39 0.145 16 / 6%) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, oklch(0.55 0.18 18 / 4%) 0px, transparent 60%);
+}
+html.light input, html.light select, html.light textarea, html.light button {
+  color-scheme: light;
+}
+html.light select option, html.light select optgroup {
+  background-color: oklch(0.99 0.003 90);
+  color: var(--color-foreground);
+}
+html.light .glass-strong {
+  background: linear-gradient(180deg, oklch(1 0 0 / 90%) 0%, oklch(1 0 0 / 70%) 100%);
+  border: 1px solid oklch(0.18 0.012 25 / 8%);
+}
+html.light .glass {
+  background: oklch(1 0 0 / 60%);
+  border: 1px solid oklch(0.18 0.012 25 / 8%);
 }
 
 @layer base {
