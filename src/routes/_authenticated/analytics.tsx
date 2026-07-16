@@ -7,6 +7,7 @@ import { groupBy } from "@/lib/trade-stats";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useAccountContext } from "@/lib/account-context";
 import { WeeklyAIReview } from "@/components/WeeklyAIReview";
+import { RiskAnalytics } from "@/components/RiskAnalytics";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   head: () => ({ meta: [{ title: "Analytics — TradeBook" }] }),
@@ -37,6 +38,9 @@ function Analytics() {
         <h1 style={{ fontFamily: "var(--font-display)" }} className="text-4xl md:text-5xl mt-1">Performance Breakdown</h1>
       </div>
       <WeeklyAIReview />
+      <RiskAnalytics />
+
+
 
 
       {trades.length === 0 ? (
