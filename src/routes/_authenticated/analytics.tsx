@@ -38,6 +38,9 @@ function Analytics() {
         <h1 style={{ fontFamily: "var(--font-display)" }} className="text-4xl md:text-5xl mt-1">Performance Breakdown</h1>
       </div>
       <WeeklyAIReview />
+      <RiskAnalytics />
+
+
 
 
       {trades.length === 0 ? (
