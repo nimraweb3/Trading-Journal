@@ -35,6 +35,7 @@ const NAV: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/accounts", label: "Accounts", icon: Wallet },
   { to: "/journal", label: "Journal", icon: BookOpen },
   { to: "/models", label: "Strategies", icon: Target },
+  { to: "/assistant", label: "AI Coach", icon: Bot },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/reviews", label: "Reviews", icon: ScrollText },
