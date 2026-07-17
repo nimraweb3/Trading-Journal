@@ -67,7 +67,7 @@ ${JSON.stringify(summary)}`;
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: "You are an expert ICT/SMC trading coach. Always reply with valid JSON only." },
+          { role: "system", content: "You are an expert trading coach. Always reply with valid JSON only." },
           { role: "user", content: prompt },
         ],
       }),

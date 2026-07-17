@@ -73,11 +73,11 @@ function AuthPage() {
         <div className="relative">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl gradient-maroon maroon-glow flex items-center justify-center">
-              <span style={{ fontFamily: "var(--font-display)" }} className="text-xl">I</span>
+              <span style={{ fontFamily: "var(--font-display)" }} className="text-xl">T</span>
             </div>
             <div>
               <div style={{ fontFamily: "var(--font-display)" }} className="text-2xl">TradeBook</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">ICT / SMC Trading Journal</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Trading Journal</div>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@ function AuthPage() {
             <span className="block italic text-accent">Track yours.</span>
           </h1>
           <p className="text-muted-foreground max-w-md leading-relaxed">
-            A focused journal for ICT and SMC traders. Log setups, tag killzones, review charts, and watch your equity curve tell the truth.
+            A focused journal for traders. Log setups, tag killzones, review charts, and watch your equity curve tell the truth.
           </p>
           <div className="grid grid-cols-3 gap-3 max-w-md">
             {[
