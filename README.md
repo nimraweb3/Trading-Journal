@@ -258,4 +258,4 @@ See [`SECURITY.md`](https://github.com/nimraweb3/Trading-Journal/blob/main/SECUR
 
 ---
 
-Built with ❤️ for my own trading — sharing it in case it helps someone else too.
+Built with ❤️ for my own trading — sharing it in case it helps someone else too.~
