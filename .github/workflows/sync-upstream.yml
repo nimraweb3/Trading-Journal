@@ -1,0 +1,38 @@
+name: Sync from Upstream
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Runs every 6 hours
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Sync with upstream
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.UPSTREAM_REPO }} # Replace UPSTREAM_REPO with your upstream repo URL in GitHub Secrets
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: upstream-temp
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge upstream changes
+        run: |
+          git remote add upstream ${{ secrets.UPSTREAM_REPO }}
+          git fetch upstream
+          git merge upstream/main --allow-unrelated-histories -m "Merge upstream changes"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+
+      # Alternatively, if you want to rebase instead of merge:
+      # git rebase upstream/main
