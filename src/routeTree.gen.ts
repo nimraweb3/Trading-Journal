@@ -25,6 +25,7 @@ import { Route as AuthenticatedAssistantRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as AuthenticatedAssistantIndexRouteImport } from './routes/_authenticated/assistant.index'
+import { Route as AuthenticatedAssistantThreadIdRouteImport } from './routes/_authenticated/assistant.$threadId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -106,6 +107,12 @@ const AuthenticatedAssistantIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAssistantRoute,
   } as any)
+const AuthenticatedAssistantThreadIdRoute =
+  AuthenticatedAssistantThreadIdRouteImport.update({
+    id: '/$threadId',
+    path: '/$threadId',
+    getParentRoute: () => AuthenticatedAssistantRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/models': typeof AuthenticatedModelsRoute
   '/reviews': typeof AuthenticatedReviewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/assistant/': typeof AuthenticatedAssistantIndexRoute
 }
 export interface FileRoutesByTo {
@@ -138,6 +146,7 @@ export interface FileRoutesByTo {
   '/models': typeof AuthenticatedModelsRoute
   '/reviews': typeof AuthenticatedReviewsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/assistant': typeof AuthenticatedAssistantIndexRoute
 }
 export interface FileRoutesById {
@@ -157,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/models': typeof AuthenticatedModelsRoute
   '/_authenticated/reviews': typeof AuthenticatedReviewsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/assistant/$threadId': typeof AuthenticatedAssistantThreadIdRoute
   '/_authenticated/assistant/': typeof AuthenticatedAssistantIndexRoute
 }
 export interface FileRouteTypes {
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/models'
     | '/reviews'
     | '/settings'
+    | '/assistant/$threadId'
     | '/assistant/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/models'
     | '/reviews'
     | '/settings'
+    | '/assistant/$threadId'
     | '/assistant'
   id:
     | '__root__'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/models'
     | '/_authenticated/reviews'
     | '/_authenticated/settings'
+    | '/_authenticated/assistant/$threadId'
     | '/_authenticated/assistant/'
   fileRoutesById: FileRoutesById
 }
@@ -334,15 +347,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantIndexRouteImport
       parentRoute: typeof AuthenticatedAssistantRoute
     }
+    '/_authenticated/assistant/$threadId': {
+      id: '/_authenticated/assistant/$threadId'
+      path: '/$threadId'
+      fullPath: '/assistant/$threadId'
+      preLoaderRoute: typeof AuthenticatedAssistantThreadIdRouteImport
+      parentRoute: typeof AuthenticatedAssistantRoute
+    }
   }
 }
 
 interface AuthenticatedAssistantRouteChildren {
+  AuthenticatedAssistantThreadIdRoute: typeof AuthenticatedAssistantThreadIdRoute
   AuthenticatedAssistantIndexRoute: typeof AuthenticatedAssistantIndexRoute
 }
 
 const AuthenticatedAssistantRouteChildren: AuthenticatedAssistantRouteChildren =
   {
+    AuthenticatedAssistantThreadIdRoute: AuthenticatedAssistantThreadIdRoute,
     AuthenticatedAssistantIndexRoute: AuthenticatedAssistantIndexRoute,
   }
 
