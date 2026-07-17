@@ -4,7 +4,7 @@
 
 I built this for myself to log my own ICT/SMC trades, tag my mistakes, and actually see my patterns instead of guessing. Sharing it here in case it's useful to other traders who want something similar, or want to fork it and make it their own.
 
-[Live Demo](https://nim-trade-journal.lovable.app)
+[Live Demo](https://trading-journal-vzwv.vercel.app/)
 
 ![Stack](https://img.shields.io/badge/stack-React_19_%2B_TanStack_Start_%2B_Supabase-800020?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-800020?style=flat-square)
