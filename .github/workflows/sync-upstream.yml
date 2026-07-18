@@ -1,21 +1,26 @@
 name: Sync from Upstream
 on:
-  workflow_dispatch: # Allow manual trigger only (disable scheduled runs for now)
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+
+permissions:
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout destination repository
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Check if UPSTREAM_REPO is set
         id: check-secret
@@ -40,10 +45,10 @@ jobs:
           git fetch upstream
           
           # Merge upstream changes
-          git merge upstream/main --allow-unrelated-histories -m "Merge upstream changes" || {
+          git merge upstream/main --no-edit --allow-unrelated-histories || {
             echo "Merge failed, please resolve conflicts manually"
             exit 1
           }
           
           # Push changes
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+          git push origin main
