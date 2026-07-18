@@ -1,8 +1,6 @@
 name: Sync from Upstream
 on:
-  schedule:
-    - cron: "0 */6 * * *" # Runs every 6 hours
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # Allow manual trigger only (disable scheduled runs for now)
 
 jobs:
   sync:
@@ -14,25 +12,38 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Sync with upstream
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.UPSTREAM_REPO }} # Replace UPSTREAM_REPO with your upstream repo URL in GitHub Secrets
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: upstream-temp
-          fetch-depth: 0
-
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge upstream changes
+      - name: Check if UPSTREAM_REPO is set
+        id: check-secret
         run: |
-          git remote add upstream ${{ secrets.UPSTREAM_REPO }}
-          git fetch upstream
-          git merge upstream/main --allow-unrelated-histories -m "Merge upstream changes"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+          if [ -z "${{ secrets.UPSTREAM_REPO }}" ]; then
+            echo "UPSTREAM_REPO secret is not set, skipping sync"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
-      # Alternatively, if you want to rebase instead of merge:
-      # git rebase upstream/main
+      - name: Sync with upstream
+        if: steps.check-secret.outputs.skip == 'false'
+        run: |
+          # Remove upstream if it already exists
+          git remote remove upstream 2>/dev/null || true
+          
+          # Add upstream
+          git remote add upstream ${{ secrets.UPSTREAM_REPO }}
+          
+          # Fetch upstream
+          git fetch upstream
+          
+          # Merge upstream changes
+          git merge upstream/main --allow-unrelated-histories -m "Merge upstream changes" || {
+            echo "Merge failed, please resolve conflicts manually"
+            exit 1
+          }
+          
+          # Push changes
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
