@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 */6 * * *"
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -13,6 +16,7 @@ jobs:
       - name: Checkout destination repository
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
       - name: Configure Git
@@ -22,7 +26,16 @@ jobs:
 
       - name: Add upstream
         run: |
-          git remote add upstream https://github.com/nimraweb3/nim-trade-journal.git
+          git remote add upstream https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nimraweb3/nim-trade-journal.git
+
+      - name: Fetch upstream
+        run: |
           git fetch upstream
-          git merge upstream/main --allow-unrelated-histories --no-edit
-          git push
+
+      - name: Merge upstream
+        run: |
+          git merge upstream/main --no-edit
+
+      - name: Push changes
+        run: |
+          git push origin main
